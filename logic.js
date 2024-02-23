@@ -1,22 +1,21 @@
-const { greetings, FromBotFailure, registrationCongratulations, mainMenu, phrases } = require("./phrases");
+const { greetings, FromBotFailure, registrationCongratulations, mainMenu, phrases, balanceMenu, phrasesFromLanguage} = require("./phrases");
 const { WELCOMEBONUS } = require("./bonus");
-const {mainKeyboard} = require("./keyboards");
+const {mainKeyboard, balanceKeyboard} = require("./keyboards");
+const Logger = require("./logger");
+const logger = new Logger('TelegramApp');
 
 function getUserInfo(msg) {
-    const chatId = msg.chat.id;
+    const chatId = msg.chat?.id || msg.from?.id;
     const userLanguage = msg.from.language_code;
     return { chatId, userLanguage };
 }
 
-function getPhrase(userLanguage, title) {
-    return phrases[title[userLanguage]] || phrases[title['en']]
-}
-
 async function handleStartCommand(bot, msg, prismaInstance) { // изменил название переменной
     const { chatId, userLanguage } = getUserInfo(msg);
-    const greetingMessage = greetings[userLanguage] || greetings['en'];
-    const fromBotFailureMessage = FromBotFailure[userLanguage] || FromBotFailure['en'];
-    const registrationCongratulationsMessage = registrationCongratulations[userLanguage] || registrationCongratulations['en'];
+    const greetingMessage = phrasesFromLanguage['greetings'][userLanguage] || phrasesFromLanguage['greetings']['en'];
+    const fromBotFailureMessage = phrasesFromLanguage['fromBotFailure'][userLanguage] || phrasesFromLanguage['fromBotFailure']['en'];
+    const registrationCongratulationsMessage = phrasesFromLanguage['registrationCongratulations'][userLanguage] || phrasesFromLanguage['registrationCongratulations']['en'];
+    logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} отправил команду /start`);
     if (msg.from.is_bot) {
         await bot.sendMessage(chatId, fromBotFailureMessage);
         return;
@@ -28,7 +27,7 @@ async function handleStartCommand(bot, msg, prismaInstance) { // изменил 
         },
     });
 
-    await bot.sendMessage(chatId, greetingMessage, { reply_markup: JSON.stringify(mainKeyboard) });
+    await bot.sendMessage(chatId, greetingMessage, { reply_markup: JSON.stringify(mainKeyboard(userLanguage)) });
     if (!user) {
         try {
             await prismaInstance.$transaction(async (prisma) => {
@@ -91,10 +90,11 @@ async function handleStartCommand(bot, msg, prismaInstance) { // изменил 
 
 async function handleMenuCommand(bot, msg) {
     const { chatId, userLanguage } = getUserInfo(msg);
-    const mainMenuMessage = mainMenu[userLanguage] || mainMenu['en'];
+    const mainMenuMessage = phrasesFromLanguage['mainMenu'][userLanguage] || phrasesFromLanguage['mainMenu']['en'];
     // Отправляем inline клавиатуру
+    logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} отправил команду /menu`);
     await bot.sendMessage(chatId, mainMenuMessage, {
-        reply_markup: JSON.stringify(mainKeyboard),
+        reply_markup: JSON.stringify(mainKeyboard(userLanguage)),
     });
 }
 
@@ -102,4 +102,58 @@ async function handleInfoCommand(bot, msg) {
     await bot.sendMessage(msg.chat.id, 'This is the info command.');
 }
 
-module.exports = { handleStartCommand, handleMenuCommand, handleInfoCommand };
+async function handleCallbackQuery(bot, callbackQuery, prisma) {
+    const data = callbackQuery.data;
+    const msg = callbackQuery.message;
+    const { chatId, userLanguage } = getUserInfo(callbackQuery);
+    const balanceMenuMessage = phrasesFromLanguage['balanceMenu'][userLanguage] || phrasesFromLanguage['balanceMenu']['en'];
+    const checkBalanceMessage1 = phrasesFromLanguage['checkBalance1'][userLanguage] || phrasesFromLanguage['checkBalance1']['en'];
+    const checkBalanceMessage2 = phrasesFromLanguage['checkBalance2'][userLanguage] || phrasesFromLanguage['checkBalance2']['en'];
+    const checkBalanceMessage3 = phrasesFromLanguage['checkBalance3'][userLanguage] || phrasesFromLanguage['checkBalance3']['en'];
+    const mainMenuMessage = phrasesFromLanguage['mainMenu'][userLanguage] || phrasesFromLanguage['mainMenu']['en'];
+    // Ваша логика обработки callbackQuery
+    switch (data) {
+        case "balance":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Баланс"`);
+            await bot.sendMessage(chatId, balanceMenuMessage, {
+                reply_markup: JSON.stringify(balanceKeyboard(userLanguage)),
+            });
+            break;
+        case "checkBalanceAction":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Проверить баланс"`);
+            // Запрос к базе данных для получения баланса пользователя
+            const user = await prisma.user.findUnique({
+                where: {
+                    chatId: chatId,
+                },
+                include: {
+                    balance: true,
+                },
+            });
+
+            if (user) {
+                await bot.sendMessage(chatId, `${user.first_name} ${user.last_name} ${checkBalanceMessage1} ${user.balance.money} ${checkBalanceMessage2} ${user.balance.bonuses} ${checkBalanceMessage3}`, {
+                    reply_markup: JSON.stringify(balanceKeyboard(userLanguage)),
+                });
+            } else {
+                // Обработка ситуации, когда пользователь не найден в базе данных
+                await bot.sendMessage(chatId, "Ошибка при получении баланса. Пожалуйста, повторите попытку позже.");
+            }
+            break;
+        case "replenishBalanceAction":
+            // Ваш код для действия "Проверить баланс"
+            break;
+        case "goBack":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Назад"`);
+            // Отправить основное меню
+            await bot.sendMessage(chatId, mainMenuMessage, {
+                reply_markup: JSON.stringify(mainKeyboard(userLanguage)),
+            });
+            break;
+        default:
+            // Обработка других вариантов
+            break;
+    }
+}
+
+module.exports = { handleStartCommand, handleMenuCommand, handleInfoCommand, handleCallbackQuery };

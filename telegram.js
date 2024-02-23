@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const { handleStartCommand, handleMenuCommand, handleInfoCommand } = require('./logic');
+const { handleStartCommand, handleMenuCommand, handleInfoCommand, handleCallbackQuery} = require('./logic');
 
 class CommandHandler {
     constructor(token, prisma) {
@@ -8,6 +8,10 @@ class CommandHandler {
 
         this.bot.on('message', async (msg) => {
             await this.handleCommand(msg);
+        });
+
+        this.bot.on('callback_query', async (callbackQuery) => {
+            await handleCallbackQuery(this.bot, callbackQuery, this.prisma);
         });
     }
 

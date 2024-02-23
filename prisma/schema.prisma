@@ -41,6 +41,7 @@ model User {
   last_name     String?
   username      String   @unique
   language_code String?
+  ozone_setting Boolean  @default(true)
   date          DateTime @default(now())
 
   balance      Balance?
