@@ -32,7 +32,7 @@ class CommandHandler {
                 break;
 
             default:
-                // Handle other commands or do nothing
+                await handleStartCommand(this.bot, msg, this.prisma);
                 break;
         }
     }

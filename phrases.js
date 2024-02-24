@@ -21,9 +21,9 @@ const phrasesFromLanguage = {
         'tr': 'Ana menü'
     },
     balanceMenu : {
-        'ru': 'Баланс',
-        'en': 'Balance',
-        'tr': 'Denge'
+        'ru': 'Меню баланса',
+        'en': 'Balance menu',
+        'tr': 'Denge menüsü'
     },
     checkBalance1 : {
         'ru': 'ваш баланс составляет',
@@ -39,6 +39,11 @@ const phrasesFromLanguage = {
         'ru': 'бонусов.',
         'en': 'bonuses.',
         'tr': 'bonustur.'
-    }
+    },
+    pourWaterMenu : {
+        'ru': 'Меню налива воды',
+        'en': 'Water filling menu',
+        'tr': 'Su doldurma menüsü'
+    },
 }
 module.exports = { phrasesFromLanguage }
