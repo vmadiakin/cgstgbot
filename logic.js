@@ -1,6 +1,6 @@
 const { phrasesFromLanguage} = require("./phrases");
-const { WELCOMEBONUS } = require("./bonus");
-const {mainKeyboard, balanceKeyboard, pourWaterKeyboard} = require("./keyboards");
+const { WELCOMEBONUS, REFERRALWELCOMEBONUS} = require("./bonus");
+const { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard } = require("./keyboards");
 const Logger = require("./logger");
 const logger = new Logger('TelegramApp');
 
@@ -39,11 +39,15 @@ async function generateRandomReferralCode(prisma) {
     return code;
 }
 
-async function handleStartCommand(bot, msg, prismaInstance) { // изменил название переменной
+async function handleStartCommand(bot, msg, prismaInstance) {
     const { chatId, userLanguage } = getUserInfo(msg);
     const greetingMessage = phrasesFromLanguage['greetings'][userLanguage] || phrasesFromLanguage['greetings']['en'];
     const fromBotFailureMessage = phrasesFromLanguage['fromBotFailure'][userLanguage] || phrasesFromLanguage['fromBotFailure']['en'];
     const registrationCongratulationsMessage = phrasesFromLanguage['registrationCongratulations'][userLanguage] || phrasesFromLanguage['registrationCongratulations']['en'];
+    const refereeRegistrationCongratulationsMessage = phrasesFromLanguage['refereeRegistrationCongratulations'][userLanguage] || phrasesFromLanguage['refereeRegistrationCongratulations']['en'];
+    const referralRegistrationCongratulationsMessage = phrasesFromLanguage['referralRegistrationCongratulations'][userLanguage] || phrasesFromLanguage['referralRegistrationCongratulations']['en'];
+    const referralCodeMatch = /\/start\s+(\w+)/.exec(msg.text);
+    const referralCode = referralCodeMatch ? referralCodeMatch[1] : null;
     logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} отправил команду /start`);
     if (msg.from.is_bot) {
         try {
@@ -117,9 +121,60 @@ async function handleStartCommand(bot, msg, prismaInstance) { // изменил 
                 });
 
                 await bot.sendMessage(chatId, registrationCongratulationsMessage);
+                let referrerUser = null;
+                if (referralCode !== null) {
+                    referrerUser = await prisma.user.findUnique({
+                        where: {
+                            referral_code: referralCode,
+                        },
+                    });
+                    // Извлекаем реферальный код из команды /start
+                    logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} использует реферальный код: ${referralCode} пользователя ${referrerUser.username} с Id ${referrerUser.id}`);
+                }
+
+                if (referrerUser) {
+                    await prisma.referral.create({
+                        data: {
+                            referrerId: referrerUser.id,
+                            refereeId: newUser.id,
+                        },
+                    });
+
+                    await prisma.balanceTransaction.create({
+                        data: {
+                            amountBonuses: REFERRALWELCOMEBONUS,
+                            type: 'DEPOSIT',
+                            description: 'Referral Bonus',
+                            user: {
+                                connect: {
+                                    id: newUser.id
+                                }
+                            },
+                            balance: {
+                                connect: {
+                                    id: newUser.balance.id
+                                }
+                            }
+                        },
+                    });
+
+                    await prisma.balance.update({
+                        where: {
+                            id: newUser.balance.id
+                        },
+                        data: {
+                            bonuses: {
+                                increment: REFERRALWELCOMEBONUS
+                            }
+                        }
+                    });
+
+                    await bot.sendMessage(chatId, `${refereeRegistrationCongratulationsMessage} ${referrerUser.first_name} ${referrerUser.last_name}`);
+                    await bot.sendMessage(referrerUser.chatId, `${referralRegistrationCongratulationsMessage} ${newUser.first_name} ${newUser.last_name}`);
+                }
             });
         } catch (error) {
-            console.error('Ошибка при создании пользователя и/или транзакции:', error);
+            logger.error('Ошибка при создании пользователя и/или транзакции:', error);
         }
     }
 }
@@ -152,6 +207,10 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
     const checkBalanceMessage3 = phrasesFromLanguage['checkBalance3'][userLanguage] || phrasesFromLanguage['checkBalance3']['en'];
     const mainMenuMessage = phrasesFromLanguage['mainMenu'][userLanguage] || phrasesFromLanguage['mainMenu']['en'];
     const pourWaterMenuMessage = phrasesFromLanguage['pourWaterMenu'][userLanguage] || phrasesFromLanguage['pourWaterMenu']['en'];
+    const referralMenuMessage = phrasesFromLanguage['referralMenu'][userLanguage] || phrasesFromLanguage['referralMenu']['en'];
+    const generateReferralInviteLinkMessage1 = phrasesFromLanguage['generateReferralInviteLink1'][userLanguage] || phrasesFromLanguage['generateReferralInviteLink1']['en'];
+    const generateReferralInviteLinkMessage2 = phrasesFromLanguage['generateReferralInviteLink2'][userLanguage] || phrasesFromLanguage['generateReferralInviteLink2']['en'];
+
     // Запрос к базе данных для получения данных пользователя
     const user = await prisma.user.findUnique({
         where: {
@@ -213,6 +272,26 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
                 });
             } catch (error) {
                 logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Налить воду":`, error);
+            }
+            break;
+        case "referralProgram":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Реферальная программа"`);
+            try {
+                await bot.sendMessage(chatId, referralMenuMessage, {
+                    reply_markup: JSON.stringify(referralKeyboard(userLanguage)),
+                });
+            } catch (error) {
+                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Реферальная программа":`, error);
+            }
+            break;
+        case "referralInviteLink":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Ссылка для приглашения"`);
+            try {
+            if (user) {
+                await bot.sendMessage(chatId, `${generateReferralInviteLinkMessage1} https://t.me/CokGuselSuBot?start=${user.referral_code} ${generateReferralInviteLinkMessage2}`);
+            }
+            } catch (error) {
+                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Ссылка для приглашения":`, error);
             }
             break;
         default:

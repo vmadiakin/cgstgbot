@@ -64,7 +64,23 @@ const buttonsNameFromLanguage = {
         'en': 'Water machine selection',
         'tr': 'Su makinesi seçimi'
     },
+    referralRules: {
+        'ru': 'Правила программы',
+        'en': 'Program Rules',
+        'tr': 'Program Kuralları'
+    },
+    referralInviteLink: {
+        'ru': 'Ссылка для приглашения',
+        'en': 'Invite link',
+        'tr': 'Bağlantıyı davet et'
+    },
+    referralStatistics: {
+        'ru': 'Статистика',
+        'en': 'Statistics',
+        'tr': 'İstatistik'
+    },
 }
+
 // Клавиатура основного меню
 const mainKeyboard = (userLanguage) => ({
     inline_keyboard: [
@@ -87,7 +103,7 @@ const balanceKeyboard= (userLanguage) => ({
             { text: buttonsNameFromLanguage.checkBalance[userLanguage] || buttonsNameFromLanguage.checkBalance['en'], callback_data: "checkBalanceAction" },
         ],
         [
-            { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" }, // Кнопка для возврата на основную клавиатуру
+            { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" },
         ],
     ],
 });
@@ -106,7 +122,7 @@ const pourWaterKeyboard = (userLanguage, userOzoneSetting, userWaterMachineSelec
         ],
         [
             { text: buttonsNameFromLanguage.waterOptions19liters[userLanguage] || buttonsNameFromLanguage.waterOptions19liters['en'], callback_data: "pourWater_19liters" },
-            { text: `${buttonsNameFromLanguage.waterOptionsWaterMachineSelection[userLanguage] || buttonsNameFromLanguage.waterOptionsWaterMachineSelection['en']} ${userOzoneSetting ? '🟢' : '🔴'}`, callback_data: "pourWater_machineSelection" },
+            { text: `${buttonsNameFromLanguage.waterOptionsWaterMachineSelection[userLanguage] || buttonsNameFromLanguage.waterOptionsWaterMachineSelection['en']} ${userWaterMachineSelection ? '🟢' : '🔴'}`, callback_data: "pourWater_machineSelection" },
         ],
         [
             { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" }, // Кнопка для возврата на основную клавиатуру
@@ -114,9 +130,18 @@ const pourWaterKeyboard = (userLanguage, userOzoneSetting, userWaterMachineSelec
     ],
 });
 
-module.exports = { mainKeyboard, balanceKeyboard, pourWaterKeyboard };
+// Клавиатура для реферальной программы
+const referralKeyboard = (userLanguage) => ({
+    inline_keyboard: [
+        [
+            { text: buttonsNameFromLanguage.referralRules[userLanguage] || buttonsNameFromLanguage.referralRules['en'], callback_data: "referralRules" },
+            { text: buttonsNameFromLanguage.referralInviteLink[userLanguage] || buttonsNameFromLanguage.referralInviteLink['en'], callback_data: "referralInviteLink" },
+            { text: buttonsNameFromLanguage.referralStatistics[userLanguage] || buttonsNameFromLanguage.referralStatistics['en'], callback_data: "referralStatistics" },
+        ],
+        [
+            { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" },
+        ],
+    ],
+});
 
-// // Извлекаем реферальный код из команды /start
-// const referralCodeMatch = /\/start\s+(\w+)/.exec(msg.text);
-// const referralCode = referralCodeMatch ? referralCodeMatch[1] : null;
-// console.log(`Пользователь ${msg.chat.username} использует реферальный код: ${referralCode}`);
+module.exports = { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard };
