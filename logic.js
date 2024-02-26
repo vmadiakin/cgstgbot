@@ -305,9 +305,74 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
                 logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Поддержка":`, error);
             }
             break;
+        case "supportProblem":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Сообщить о проблеме"`);
+            try {
+                // Отправка первого вопроса
+                const question1 = 'Введите номер аппарата:';
+                bot.sendMessage(chatId, question1, { reply_markup: { force_reply: true } })
+                    .then(async (sentMessage1) => {
+                        console.log('Вопрос 1 отправлен:', sentMessage1);
+
+                        // Получение ответа на первый вопрос
+                        const answer1 = await new Promise(resolve => {
+                            bot.on('message', (response1) => {
+                                if (response1.chat.id === chatId && response1.reply_to_message.message_id === sentMessage1.message_id) {
+                                    resolve(response1.text);
+                                }
+                            });
+                        });
+                        console.log('Ответ пользователя на вопрос 1:', answer1);
+
+                        // Отправка второго вопроса
+                        const question2 = 'Опишите проблему:';
+                        bot.sendMessage(chatId, question2, { reply_markup: { force_reply: true } })
+                            .then(async (sentMessage2) => {
+                                console.log('Вопрос 2 отправлен:', sentMessage2);
+
+                                // Получение ответа на второй вопрос
+                                const answer2 = await new Promise(resolve => {
+                                    bot.on('message', (response2) => {
+                                        if (response2.chat.id === chatId && response2.reply_to_message.message_id === sentMessage2.message_id) {
+                                            resolve(response2.text);
+                                        }
+                                    });
+                                });
+                                console.log('Ответ пользователя на вопрос 2:', answer2);
+
+                                // Ваши дальнейшие действия с ответами пользователя
+                            })
+                            .catch((error) => {
+                                console.error('Ошибка при отправке второго вопроса:', error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error('Ошибка при отправке первого вопроса:', error);
+                    });
+            } catch (error) {
+                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Сообщить о проблеме":`, error);
+            }
+            break;
+        case "supportCooperation":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Сотрудничество"`);
+            try {
+                const keyboard = {
+                    inline_keyboard: [
+                        [{ text: 'Сотрудничество', web_app: {url: 'https://premier.one/'}}]
+                    ]
+                };
+
+                await bot.sendMessage(chatId, supportMenuMessage, {
+                    reply_markup: JSON.stringify(keyboard),
+                });
+            } catch (error) {
+                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Сотрудничество":`, error);
+            }
+            break;
         default:
             // Обработка других вариантов
             break;
+
     }
 }
 

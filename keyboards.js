@@ -159,7 +159,7 @@ const supportKeyboard = (userLanguage) => ({
     inline_keyboard: [
         [
             { text: buttonsNameFromLanguage.supportProblem[userLanguage] || buttonsNameFromLanguage.supportProblem['en'], callback_data: "supportProblem" },
-            { text: buttonsNameFromLanguage.supportCooperation[userLanguage] || buttonsNameFromLanguage.supportCooperation['en'], callback_data: "supportCooperation" },
+            { text: buttonsNameFromLanguage.supportCooperation[userLanguage] || buttonsNameFromLanguage.supportCooperation['en'], web_app: {url: 'https://premier.one/'}},
         ],
         [
             { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" },
