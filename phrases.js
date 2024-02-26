@@ -60,15 +60,20 @@ const phrasesFromLanguage = {
         'en': 'Water filling menu',
         'tr': 'Su doldurma menüsü'
     },
-    generateReferralInviteLink1: {
+    generateReferralInviteLink1 : {
         'ru': 'Это твоя реферальная ссылка -',
         'en': 'This is your referral link -',
         'tr': 'Bu sizin yönlendirme bağlantınızdır -'
     },
-    generateReferralInviteLink2: {
+    generateReferralInviteLink2 : {
         'ru': '🌟. Каждый пользователь, зарегистрировавшийся по твоей ссылке, получит дополнительный стартовый бонус 🎁. При этом ты будешь получать бонусы от каждой покупки не только пользователей, которых ты пригласил, но и тех, кого они пригласят 🔥',
         'en': '🌟. Each user who registers using your link will receive an additional starting bonus 🎁. At the same time, you will receive bonuses from every purchase not only from the users you invited, but also from those they invite 🔥',
         'tr': '🌟. Bağlantınızı kullanarak kaydolan her kullanıcı ek bir başlangıç ​​bonusu alacaktır 🎁. Aynı zamanda sadece davet ettiğiniz kullanıcılardan değil, davet ettikleri kişilerden de her satın alma işleminde bonus alacaksınız 🔥'
+    },
+    supportMenu : {
+        'ru': 'Меню поддержки',
+        'en': 'Support menu',
+        'tr': 'Destek menüsü'
     },
 }
 module.exports = { phrasesFromLanguage }

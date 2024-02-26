@@ -79,6 +79,16 @@ const buttonsNameFromLanguage = {
         'en': 'Statistics',
         'tr': 'İstatistik'
     },
+    supportProblem: {
+        'ru': 'Сообщить о проблеме',
+        'en': 'Report a problem',
+        'tr': 'Problemi şikayet et'
+    },
+    supportCooperation: {
+        'ru': 'Сотрудничество',
+        'en': 'Cooperation',
+        'tr': 'İşbirliği'
+    },
 }
 
 // Клавиатура основного меню
@@ -144,4 +154,17 @@ const referralKeyboard = (userLanguage) => ({
     ],
 });
 
-module.exports = { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard };
+// Клавиатура для реферальной программы
+const supportKeyboard = (userLanguage) => ({
+    inline_keyboard: [
+        [
+            { text: buttonsNameFromLanguage.supportProblem[userLanguage] || buttonsNameFromLanguage.supportProblem['en'], callback_data: "supportProblem" },
+            { text: buttonsNameFromLanguage.supportCooperation[userLanguage] || buttonsNameFromLanguage.supportCooperation['en'], callback_data: "supportCooperation" },
+        ],
+        [
+            { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" },
+        ],
+    ],
+});
+
+module.exports = { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard, supportKeyboard };

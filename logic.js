@@ -1,6 +1,6 @@
 const { phrasesFromLanguage} = require("./phrases");
 const { WELCOMEBONUS, REFERRALWELCOMEBONUS} = require("./bonus");
-const { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard } = require("./keyboards");
+const { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard, supportKeyboard} = require("./keyboards");
 const Logger = require("./logger");
 const logger = new Logger('TelegramApp');
 
@@ -210,6 +210,7 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
     const referralMenuMessage = phrasesFromLanguage['referralMenu'][userLanguage] || phrasesFromLanguage['referralMenu']['en'];
     const generateReferralInviteLinkMessage1 = phrasesFromLanguage['generateReferralInviteLink1'][userLanguage] || phrasesFromLanguage['generateReferralInviteLink1']['en'];
     const generateReferralInviteLinkMessage2 = phrasesFromLanguage['generateReferralInviteLink2'][userLanguage] || phrasesFromLanguage['generateReferralInviteLink2']['en'];
+    const supportMenuMessage = phrasesFromLanguage['supportMenu'][userLanguage] || phrasesFromLanguage['supportMenu']['en'];
 
     // Запрос к базе данных для получения данных пользователя
     const user = await prisma.user.findUnique({
@@ -292,6 +293,16 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
             }
             } catch (error) {
                 logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Ссылка для приглашения":`, error);
+            }
+            break;
+        case "support":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Поддержка"`);
+            try {
+                await bot.sendMessage(chatId, supportMenuMessage, {
+                    reply_markup: JSON.stringify(supportKeyboard(userLanguage)),
+                });
+            } catch (error) {
+                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Поддержка":`, error);
             }
             break;
         default:
