@@ -95,7 +95,7 @@ const buttonsNameFromLanguage = {
 const mainKeyboard = (userLanguage) => ({
     inline_keyboard: [
         [
-            { text: buttonsNameFromLanguage.pourWater[userLanguage] || buttonsNameFromLanguage.pourWater['en'], callback_data: "pourWater" },
+            { text: buttonsNameFromLanguage.pourWater[userLanguage] || buttonsNameFromLanguage.pourWater['en'], web_app: {url: `${process.env.WEB_APP_DOMEN}${process.env.WEB_APP_POURWATER_PREFIX}`}},
             { text: buttonsNameFromLanguage.balance[userLanguage] || buttonsNameFromLanguage.pourWater['en'], callback_data: "balance" },
         ],
         [
@@ -109,7 +109,7 @@ const mainKeyboard = (userLanguage) => ({
 const balanceKeyboard= (userLanguage) => ({
     inline_keyboard: [
         [
-            { text: buttonsNameFromLanguage.replenishBalance[userLanguage] || buttonsNameFromLanguage.replenishBalance['en'], callback_data: "replenishBalanceAction" },
+            { text: buttonsNameFromLanguage.replenishBalance[userLanguage] || buttonsNameFromLanguage.replenishBalance['en'], web_app: {url: `${process.env.WEB_APP_DOMEN}${process.env.WEB_APP_BALANCE_PREFIX}`}},
             { text: buttonsNameFromLanguage.checkBalance[userLanguage] || buttonsNameFromLanguage.checkBalance['en'], callback_data: "checkBalanceAction" },
         ],
         [
@@ -158,8 +158,8 @@ const referralKeyboard = (userLanguage) => ({
 const supportKeyboard = (userLanguage) => ({
     inline_keyboard: [
         [
-            { text: buttonsNameFromLanguage.supportProblem[userLanguage] || buttonsNameFromLanguage.supportProblem['en'], callback_data: "supportProblem" },
-            { text: buttonsNameFromLanguage.supportCooperation[userLanguage] || buttonsNameFromLanguage.supportCooperation['en'], web_app: {url: 'https://premier.one/'}},
+            { text: buttonsNameFromLanguage.supportProblem[userLanguage] || buttonsNameFromLanguage.supportProblem['en'], web_app: {url: `${process.env.WEB_APP_DOMEN}${process.env.WEB_APP_TROUBLE_PREFIX}`}},
+            { text: buttonsNameFromLanguage.supportCooperation[userLanguage] || buttonsNameFromLanguage.supportCooperation['en'], web_app: {url: `${process.env.WEB_APP_DOMEN}${process.env.WEB_APP_COOP_PREFIX}`}},
         ],
         [
             { text: buttonsNameFromLanguage.back[userLanguage] || buttonsNameFromLanguage.back['en'], callback_data: "goBack" },

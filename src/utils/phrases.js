@@ -1,4 +1,4 @@
-const {WELCOMEBONUS, REFERRALWELCOMEBONUS} = require("./bonus");
+const {WELCOMEBONUS, REFERRALWELCOMEBONUS} = require("../controllers/bonus");
 const phrasesFromLanguage = {
     greetings : {
         'ru': 'Привет!',

@@ -1,43 +1,9 @@
-const { phrasesFromLanguage} = require("./phrases");
+const { phrasesFromLanguage} = require("../utils/phrases");
 const { WELCOMEBONUS, REFERRALWELCOMEBONUS} = require("./bonus");
-const { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard, supportKeyboard} = require("./keyboards");
-const Logger = require("./logger");
+const { mainKeyboard, balanceKeyboard, pourWaterKeyboard, referralKeyboard, supportKeyboard} = require("../utils/keyboards");
+const Logger = require("../utils/logger");
+const {getUserInfo, generateRandomReferralCode} = require("./functions");
 const logger = new Logger('TelegramApp');
-
-function getUserInfo(msg) {
-    try {
-    const chatId = msg.chat?.id || msg.from?.id;
-    const userLanguage = msg.from.language_code;
-    return { chatId, userLanguage };
-    } catch (error) {
-        logger.error(`Ошибка при выполнении функции "getUserInfo":`, error);
-    }
-}
-
-async function generateRandomReferralCode(prisma) {
-    let code = "";
-    const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const codeLength = 10;
-
-    const isCodeUnique = async (codeToCheck) => {
-        const existingUser = await prisma.user.findFirst({
-            where: {
-                referral_code: codeToCheck,
-            },
-        });
-        return !existingUser;
-    };
-
-    do {
-        code = "";
-        for (let i = 0; i < codeLength; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            code += characters[randomIndex];
-        }
-    } while (!(await isCodeUnique(code)));
-
-    return code;
-}
 
 async function handleStartCommand(bot, msg, prismaInstance) {
     const { chatId, userLanguage } = getUserInfo(msg);
@@ -76,7 +42,7 @@ async function handleStartCommand(bot, msg, prismaInstance) {
                         last_name: msg.from.last_name,
                         username: msg.from.username,
                         language_code: msg.from.language_code,
-                        water_machine_id: null,
+                        favoriteMachineId: null,
                         referral_code: await generateRandomReferralCode(prisma),
                         balance: {
                             create: {
@@ -84,12 +50,12 @@ async function handleStartCommand(bot, msg, prismaInstance) {
                                 bonuses: 0
                             },
                         },
-
                     },
                     include: {
                         balance: true
                     },
                 });
+
 
                 await prisma.balanceTransaction.create({
                     data: {
@@ -222,7 +188,6 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
         },
     });
 
-    // Ваша логика обработки callbackQuery
     switch (data) {
         case "balance":
             logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Баланс"`);
@@ -248,9 +213,6 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
             } catch (error) {
                 logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Проверить баланс":`, error);
             }
-            break;
-        case "replenishBalanceAction":
-            // Ваш код для действия "Проверить баланс"
             break;
         case "goBack":
             logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Назад"`);
@@ -303,70 +265,6 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
                 });
             } catch (error) {
                 logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Поддержка":`, error);
-            }
-            break;
-        case "supportProblem":
-            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Сообщить о проблеме"`);
-            try {
-                // Отправка первого вопроса
-                const question1 = 'Введите номер аппарата:';
-                bot.sendMessage(chatId, question1, { reply_markup: { force_reply: true } })
-                    .then(async (sentMessage1) => {
-                        console.log('Вопрос 1 отправлен:', sentMessage1);
-
-                        // Получение ответа на первый вопрос
-                        const answer1 = await new Promise(resolve => {
-                            bot.on('message', (response1) => {
-                                if (response1.chat.id === chatId && response1.reply_to_message.message_id === sentMessage1.message_id) {
-                                    resolve(response1.text);
-                                }
-                            });
-                        });
-                        console.log('Ответ пользователя на вопрос 1:', answer1);
-
-                        // Отправка второго вопроса
-                        const question2 = 'Опишите проблему:';
-                        bot.sendMessage(chatId, question2, { reply_markup: { force_reply: true } })
-                            .then(async (sentMessage2) => {
-                                console.log('Вопрос 2 отправлен:', sentMessage2);
-
-                                // Получение ответа на второй вопрос
-                                const answer2 = await new Promise(resolve => {
-                                    bot.on('message', (response2) => {
-                                        if (response2.chat.id === chatId && response2.reply_to_message.message_id === sentMessage2.message_id) {
-                                            resolve(response2.text);
-                                        }
-                                    });
-                                });
-                                console.log('Ответ пользователя на вопрос 2:', answer2);
-
-                                // Ваши дальнейшие действия с ответами пользователя
-                            })
-                            .catch((error) => {
-                                console.error('Ошибка при отправке второго вопроса:', error);
-                            });
-                    })
-                    .catch((error) => {
-                        console.error('Ошибка при отправке первого вопроса:', error);
-                    });
-            } catch (error) {
-                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Сообщить о проблеме":`, error);
-            }
-            break;
-        case "supportCooperation":
-            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Сотрудничество"`);
-            try {
-                const keyboard = {
-                    inline_keyboard: [
-                        [{ text: 'Сотрудничество', web_app: {url: 'https://premier.one/'}}]
-                    ]
-                };
-
-                await bot.sendMessage(chatId, supportMenuMessage, {
-                    reply_markup: JSON.stringify(keyboard),
-                });
-            } catch (error) {
-                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Сотрудничество":`, error);
             }
             break;
         default:

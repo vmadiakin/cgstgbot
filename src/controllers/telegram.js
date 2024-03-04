@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
-const { handleStartCommand, handleMenuCommand, handleInfoCommand, handleCallbackQuery} = require('./logic');
-const Logger = require("./logger");
+const { handleStartCommand, handleMenuCommand, handleInfoCommand, handleCallbackQuery} = require('./handlers');
+const Logger = require("../utils/logger");
 const logger = new Logger('TelegramApp');
 
 class CommandHandler {
@@ -40,7 +40,7 @@ class CommandHandler {
                 break;
         }
         } catch (error) {
-            logger.error(`Ошибка при отправки пользователем ${msg.chat.username} с userId ${msg.chat.id} сообщения:`, error);
+            logger.error(`Ошибка при отправке пользователем ${msg.chat.username} с userId ${msg.chat.id} сообщения:`, error);
         }
     }
 

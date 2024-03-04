@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Command {
+  id      Int    @id @default(autoincrement())
+  userId  Int?
+  title   String
+  address String
+}
+
 model Referral {
   id         Int      @id @default(autoincrement())
   referrerId Int
@@ -19,9 +26,11 @@ model Referral {
 
 model WaterMachine {
   id        Int     @id @default(autoincrement())
+  title     String
   model     String?
   latitude  Float?
   longitude Float?
+  address   String
 
   users User[]
 }
@@ -53,19 +62,19 @@ model Balance {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
-  chatId           BigInt   @unique
-  is_bot           Boolean
-  first_name       String?
-  last_name        String?
-  username         String   @unique
-  language_code    String?
-  referral_code    String   @unique
-  ozone_setting    Boolean  @default(true)
-  date             DateTime @default(now())
-  water_machine_id Int?
+  id                Int      @id @default(autoincrement())
+  chatId            BigInt   @unique
+  is_bot            Boolean
+  first_name        String?
+  last_name         String?
+  username          String   @unique
+  language_code     String?
+  referral_code     String   @unique
+  ozone_setting     Boolean  @default(true)
+  date              DateTime @default(now())
+  favoriteMachineId Int?
 
-  waterMachine  WaterMachine?        @relation(fields: [water_machine_id], references: [id])
+  waterMachine  WaterMachine?        @relation(fields: [favoriteMachineId], references: [id])
   balance       Balance?
   transactions  BalanceTransaction[]
   referredBy    Referral[]           @relation("RefereeUser")

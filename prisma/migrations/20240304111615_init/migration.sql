@@ -2,6 +2,16 @@
 CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL');
 
 -- CreateTable
+CREATE TABLE "Command" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER,
+    "title" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+
+    CONSTRAINT "Command_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Referral" (
     "id" SERIAL NOT NULL,
     "referrerId" INTEGER NOT NULL,
@@ -14,9 +24,11 @@ CREATE TABLE "Referral" (
 -- CreateTable
 CREATE TABLE "WaterMachine" (
     "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
     "model" TEXT,
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
+    "address" TEXT NOT NULL,
 
     CONSTRAINT "WaterMachine_pkey" PRIMARY KEY ("id")
 );
@@ -59,7 +71,7 @@ CREATE TABLE "User" (
     "referral_code" TEXT NOT NULL,
     "ozone_setting" BOOLEAN NOT NULL DEFAULT true,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "water_machine_id" INTEGER,
+    "favoriteMachineId" INTEGER,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -92,4 +104,4 @@ ALTER TABLE "BalanceTransaction" ADD CONSTRAINT "BalanceTransaction_balanceId_fk
 ALTER TABLE "Balance" ADD CONSTRAINT "Balance_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_water_machine_id_fkey" FOREIGN KEY ("water_machine_id") REFERENCES "WaterMachine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_favoriteMachineId_fkey" FOREIGN KEY ("favoriteMachineId") REFERENCES "WaterMachine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
