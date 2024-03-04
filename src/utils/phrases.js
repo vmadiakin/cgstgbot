@@ -25,6 +25,62 @@ const phrasesFromLanguage = {
         'en': `🥳 A new user registered using your referral link -`,
         'tr': `🥳 Yeni bir kullanıcı sizin yönlendirme bağlantınızı kullanarak kaydoldu -`
     },
+    ConditionsForParticipationInTheReferralProgram: {
+        'ru': `Условия участия в реферальной программе:
+        1. Регистрация и Участие:
+        Для участия в реферальной программе необходимо получить ссылку для приглашения в меню реферальной программы.
+        Твоя реферальная ссылка придет в ответном сообщении после нажатия кнопки "Ссылка на приглашение"
+        Отправляй свою реферальную ссылку, всем кто захочет использовать аппарат CokGuzelSu.
+        2. Выгоды для приглашенных пользователей:
+        Каждый пользователь, зарегистрировавшийся по твоей ссылке, получит дополнительную стартовую выгоду в размере 25 бонусов 🎁. 
+        3. Выгоды за приглашения:
+        Ты получишь 3% от потраченной суммы денег пользователями, которых ты пригласил, в виде бонусов.
+        Дополнительно, ты получишь 1% от потраченной суммы денег пользователями, приглашенными теми, кого ты пригласил.
+        4. Начисление бонусов:
+        Бонусы начисляются на счет пользователя автоматически после завершения покупки приглашенными пользователями.
+        5. Использование бонусов:
+        Бонусы используются автоматически для оплаты услуг CokGuzelSu в размере 50% от суммы покупки.
+        6. Изменения в Условиях:
+        CokGuzelSu оставляет за собой право в любой момент изменить условия реферальной программы. Уведомления об изменениях будут отправлены пользователям в чате Telegram бота CokGuzelSu.
+        7. Поддержка:
+        В случае вопросов, предложений или проблем с реферальной программой, пользователи могут обращаться в службу поддержки CokGuzelSu.`,
+        'en': `Conditions for participation in the referral program:
+         1. Registration and Participation:
+         To participate in the referral program, you must receive an invitation link in the referral program menu.
+         Your referral link will come in a response message after clicking the "Invite Link" button
+         Send your referral link to everyone who wants to use the CokGuzelSu device.
+         2. Benefits for invited users:
+         Each user who registers using your link will receive an additional starting benefit of 25 bonuses 🎁.
+         3. Benefits for invitations:
+         You will receive 3% of the amount of money spent by the users you invited in the form of bonuses.
+         Additionally, you will receive 1% of the amount spent by users invited by those whom you have invited.
+         4. Accrual of bonuses:
+         Bonuses are credited to the user's account automatically after the completion of the purchase by invited users.
+         5. Use of bonuses:
+         Bonuses are used automatically to pay for CokGuzelSu services in the amount of 50% of the purchase amount.
+         6. Changes to the Terms:
+         CokGuzelSu reserves the right to change the terms of the referral program at any time. Notifications of changes will be sent to users in the Telegram chat of the CokGuzelSu bot.
+         7. Support:
+         In case of questions, suggestions or problems with the referral program, users can contact CokGuzelSu support service.`,
+        'tr': `Yönlendirme programına katılım koşulları:
+         1. Kayıt ve Katılım:
+         Yönlendirme programına katılmak için yönlendirme programı menüsünde bir davet bağlantısı almanız gerekir.
+         Yönlendirme bağlantınız, "Bağlantıyı davet et" düğmesini tıkladıktan sonra bir yanıt mesajıyla gelecektir
+         ÇokGüzelSu cihazını kullanmak isteyen herkese yönlendirme bağlantınızı gönderin.
+         2. Davet edilen kullanıcılar için avantajlar:
+         Bağlantınızı kullanarak kaydolan her kullanıcı, 25 bonustan oluşan ek bir başlangıç ​​avantajına sahip olacaktır 🎁.
+         3. Davetiyelerin faydaları:
+         Davet ettiğiniz kullanıcıların harcadığı paranın %3'ünü bonus şeklinde alacaksınız.
+         Ek olarak, kişisel olarak davet ettiğin kişiler tarafından davet edilen kullanıcıların harcadığı tutarın %1'ini alacaksın.
+         4. İkramiyelerin tahakkuku:
+         Bonuslar, davet edilen kullanıcılar tarafından satın alma işlemi tamamlandıktan sonra otomatik olarak kullanıcının hesabına aktarılır.
+         5. Bonusların kullanımı:
+         Bonuslar, ÇokGüzelSu hizmetlerinin ödemesinde satın alma tutarının %50'si oranında otomatik olarak kullanılır.
+         6. Şartlarda Değişiklikler:
+         ÇokGüzelSu, yönlendirme programının koşullarını dilediği zaman değiştirme hakkını saklı tutar. Değişiklik bildirimleri ÇokGüzelSu botunun Telegram sohbetinde kullanıcılara gönderilecek.
+         7. Destek:
+         Kullanıcılar yönlendirme programıyla ilgili soru, öneri veya sorun yaşamaları durumunda ÇokGüzelSu destek hizmetiyle iletişime geçebilirler.`
+    },
     mainMenu : {
         'ru': 'Главное меню',
         'en': 'Main menu',

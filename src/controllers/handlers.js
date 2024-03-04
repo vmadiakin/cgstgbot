@@ -177,6 +177,7 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
     const generateReferralInviteLinkMessage1 = phrasesFromLanguage['generateReferralInviteLink1'][userLanguage] || phrasesFromLanguage['generateReferralInviteLink1']['en'];
     const generateReferralInviteLinkMessage2 = phrasesFromLanguage['generateReferralInviteLink2'][userLanguage] || phrasesFromLanguage['generateReferralInviteLink2']['en'];
     const supportMenuMessage = phrasesFromLanguage['supportMenu'][userLanguage] || phrasesFromLanguage['supportMenu']['en'];
+    const ConditionsForParticipationInTheReferralProgramMessage = phrasesFromLanguage['ConditionsForParticipationInTheReferralProgram'][userLanguage] || phrasesFromLanguage['ConditionsForParticipationInTheReferralProgram']['en'];
 
     // Запрос к базе данных для получения данных пользователя
     const user = await prisma.user.findUnique({
@@ -255,6 +256,16 @@ async function handleCallbackQuery(bot, callbackQuery, prisma) {
             }
             } catch (error) {
                 logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Ссылка для приглашения":`, error);
+            }
+            break;
+        case "referralRules":
+            logger.log(`Пользователь ${msg.chat.username} с userId ${msg.chat.id} нажал кнопку "Правила программы"`);
+            try {
+                if (user) {
+                    await bot.sendMessage(chatId, `${ConditionsForParticipationInTheReferralProgramMessage}`);
+                }
+            } catch (error) {
+                logger.error(`Ошибка при нажатии пользователем ${msg.chat.username} с userId ${msg.chat.id} кнопки "Правила программы":`, error);
             }
             break;
         case "support":
